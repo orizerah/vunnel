@@ -93,7 +93,7 @@ class Parser:
                     {
                         "Name": package,
                         "Version": cve_info.get("fixed_version", ""),
-                        "VersionFormat": "apt",
+                        "VersionFormat": "dpkg",
                         "NamespaceName": self.namespace + ":" + str(release),
                     },
                 )
