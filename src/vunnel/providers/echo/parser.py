@@ -15,6 +15,7 @@ class Parser:
     _release_ = "1"
     _advisories_dir = "echo-advisories"
     _advisories_filename = "data.json"
+
     def __init__(
         self,
         workspace,
@@ -59,8 +60,7 @@ class Parser:
         advisories_data_dict = {}
 
         try:
-
-                yield self._release_, advisories_data_dict
+            yield self._release_, advisories_data_dict
         except Exception:
             self.logger.exception(f"failed to load {self.namespace} advisories data")
             raise
@@ -72,7 +72,6 @@ class Parser:
         :param advisories_data_dict:
         :return:
         """
-
 
         self.logger.debug("normalizing vulnerability data")
 
@@ -90,12 +89,14 @@ class Parser:
                     record["Vulnerability"]["FixedIn"] = []
                     vuln_dict[cve_id] = record
                 cve_record = vuln_dict[cve_id]
-                cve_record["Vulnerability"]["FixedIn"].append({
-                    "Name": package,
-                    "Version": cve_info.get("fixed_version", ""),
-                    "VersionFormat": "apt",
-                    "NamespaceName": self.namespace + ":" + str(release),
-                })
+                cve_record["Vulnerability"]["FixedIn"].append(
+                    {
+                        "Name": package,
+                        "Version": cve_info.get("fixed_version", ""),
+                        "VersionFormat": "apt",
+                        "NamespaceName": self.namespace + ":" + str(release),
+                    },
+                )
         return vuln_dict
 
     def get(self):
@@ -109,4 +110,3 @@ class Parser:
             advisories_data_dict = orjson.loads(fh.read())
 
         yield self._release_, self._normalize(self._release_, advisories_data_dict)
-
