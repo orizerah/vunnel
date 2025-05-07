@@ -5,7 +5,7 @@ import os
 
 import pytest
 from vunnel import result, workspace
-from vunnel.providers.echo import Config, Provider 
+from vunnel.providers.echo import Config, Provider
 from vunnel.providers.echo.parser import Parser
 
 
