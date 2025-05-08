@@ -136,35 +136,44 @@ class TestParser:
         )
 
 
-# def test_provider_schema(helpers):
-#     workspace = helpers.provider_workspace_helper(
-#         name=Provider.name(),
-#         input_fixture="test-fixtures/input",
-#     )
-#     c = Config()
-#     c.runtime.result_store = result.StoreStrategy.FLAT_FILE
-#     p = Provider(root=workspace.root, config=c)
+def test_provider_schema(helpers, disable_get_requests, monkeypatch):
+    workspace = helpers.provider_workspace_helper(
+        name=Provider.name(),
+        input_fixture="test-fixtures/input",
+    )
+    c = Config()
+    c.runtime.result_store = result.StoreStrategy.FLAT_FILE
+    p = Provider(root=workspace.root, config=c)
+    def mock_download():
+        return None
 
-#     p.update(None)
+    monkeypatch.setattr(p.parser, "_download", mock_download)
 
-#     assert workspace.num_result_entries() == 42116
-#     assert workspace.result_schemas_valid(require_entries=True)
+    p.update(None)
+
+    assert workspace.num_result_entries() == 25
+    assert workspace.result_schemas_valid(require_entries=True)
 
 
-# def test_provider_via_snapshot(helpers):
-#     workspace = helpers.provider_workspace_helper(
-#         name=Provider.name(),
-#         input_fixture="test-fixtures/input",
-#     )
+def test_provider_via_snapshot(helpers, disable_get_requests, monkeypatch):
+    workspace = helpers.provider_workspace_helper(
+        name=Provider.name(),
+        input_fixture="test-fixtures/input",
+    )
 
-#     c = Config()
-#     # keep all of the default values for the result store, but override the strategy
-#     c.runtime.result_store = result.StoreStrategy.FLAT_FILE
-#     p = Provider(
-#         root=workspace.root,
-#         config=c,
-#     )
+    c = Config()
+    # keep all of the default values for the result store, but override the strategy
+    c.runtime.result_store = result.StoreStrategy.FLAT_FILE
+    p = Provider(
+        root=workspace.root,
+        config=c,
+    )
 
-#     p.update(None)
+    def mock_download():
+        return None
 
-    # workspace.assert_result_snapshots()
+    monkeypatch.setattr(p.parser, "_download", mock_download)
+
+    p.update(None)
+
+    workspace.assert_result_snapshots()
