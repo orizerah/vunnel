@@ -52,19 +52,6 @@ class Parser:
             self.logger.exception(f"Error downloading Echo advisories from {self.url}")
             raise
 
-    def _load(self):
-        """
-        Loads all advisories json and yields it
-        :return:
-        """
-        advisories_data_dict = {}
-
-        try:
-            yield self._release_, advisories_data_dict
-        except Exception:
-            self.logger.exception(f"failed to load {self.namespace} advisories data")
-            raise
-
     def _normalize(self, release, data):
         """
         Normalize all the advisories entries into vulnerability payload records
@@ -83,8 +70,7 @@ class Parser:
                     record["Vulnerability"]["Name"] = cve_id
                     record["Vulnerability"]["NamespaceName"] = self.namespace + ":" + str(release)
                     reference_links = vulnerability.build_reference_links(cve_id)
-                    if reference_links:
-                        record["Vulnerability"]["Link"] = reference_links[0]
+                    record["Vulnerability"]["Link"] = reference_links[0] if reference_links else ""
                     record["Vulnerability"]["Severity"] = cve_info.get("severity", "Unknown")
                     record["Vulnerability"]["FixedIn"] = []
                     vuln_dict[cve_id] = record
